@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int *stack;
+int top = -1;
+int MAX;
+
+void push() {
+    int val;
+    if (top == MAX - 1) {
+        printf("Overflow: Stack is full\n");
+        return;
+    }
+    printf("Enter value to push: ");
+    scanf("%d", &val);
+    top++;
+    stack[top] = val;
+    printf("%d pushed into stack\n", val);
+}
+
+void pop() {
+    if (top == -1) {
+        printf("Underflow: Stack is empty\n");
+        return;
+    }
+    printf("%d popped from stack\n", stack[top]);
+    top--;
+}
+
+void display() {
+    if (top == -1) {
+        printf("Stack is empty\n");
+        return;
+    }
+    printf("Stack contents: ");
+    for (int i = top; i >= 0; i--) {
+        printf("%d ", stack[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int choice;
+    printf("Enter the max size of the stack: ");
+    scanf("%d", &MAX);
+
+    stack = (int *)malloc(MAX * sizeof(int));
+
+    while (1) {
+        printf("\n--- Stack Menu ---\n");
+        printf("1. Push\n");
+        printf("2. Pop\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                push();
+                break;
+            case 2:
+                pop();
+                break;
+            case 3:
+                display();
+                break;
+            case 4:
+                free(stack);
+                exit(0);
+            default:
+                printf("Invalid choice, try again\n");
+        }
+    }
+    return 0;
+}
