@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 100
+
+// Stack structure to hold string pointers
+typedef struct {
+    char* data[MAX];
+    int top;
+} Stack;
+
+void initStack(Stack* s) {
+    s->top = -1;
+}
+
+int isFull(Stack* s) {
+    return s->top == MAX - 1;
+}
+
+int isEmpty(Stack* s) {
+    return s->top == -1;
+}
+
+void push(Stack* s, char* str) {
+    if (isFull(s)) {
+        printf("Stack Overflow\n");
+        exit(1);
+    }
+    s->data[++(s->top)] = str;
+}
+
+char* pop(Stack* s) {
+    if (isEmpty(s)) {
+        printf("Stack Underflow\n");
+        exit(1);
+    }
+    return s->data[(s->top)--];
+}
+
+// Check if character is an operator
+int isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+
+// Function to convert Prefix to Postfix
+void prefixToPostfix(char* prefix, char* result) {
+    Stack s;
+    initStack(&s);
+
+    int length = strlen(prefix);
+
+    // Scan the prefix expression from right to left
+    for (int i = length - 1; i >= 0; i--) {
+        char ch = prefix[i];
+
+        // Skip whitespace
+        if (ch == ' ' || ch == '\t') {
+            continue;
+        }
+
+        // If character is an operator
+        if (isOperator(ch)) {
+            // Pop two operands from the stack
+            char* op1 = pop(&s);
+            char* op2 = pop(&s);
+
+            // Allocate memory for new combined string: op1 + op2 + operator
+            char* temp = (char*)malloc(strlen(op1) + strlen(op2) + 2);
+            
+            // Format: operand1 + operand2 + operator
+            sprintf(temp, "%s%s%c", op1, op2, ch);
+
+            // Push the result back to stack
+            push(&s, temp);
+
+            // Free intermediate allocated memory
+            free(op1);
+            free(op2);
+        }
+        // If character is an operand
+        else {
+            char* operand = (char*)malloc(2);
+            operand[0] = ch;
+            operand[1] = '\0';
+            push(&s, operand);
+        }
+    }
+
+    // The final result is on top of the stack
+    char* finalRes = pop(&s);
+    strcpy(result, finalRes);
+    free(finalRes);
+}
+
+int main() {
+    char prefix[MAX] = "*+AB-CD"; // Example Prefix Expression
+    char postfix[MAX];
+
+    printf("Prefix Expression:  %s\n", prefix);
+
+    prefixToPostfix(prefix, postfix);
+
+    printf("Postfix Expression: %s\n", postfix);
+
+    return 0;
+}
